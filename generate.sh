@@ -13,11 +13,12 @@ protoc-gen-go --version
 which protoc-gen-go-vtproto
 which easyjson
 
-protoc --go_out=. --plugin protoc-gen-go=${GOBIN}/protoc-gen-go --go-vtproto_out=. \
-  --plugin protoc-gen-go-vtproto=${GOBIN}/protoc-gen-go-vtproto \
+protoc --go_out=. --plugin protoc-gen-go=${GOPATH}/bin/protoc-gen-go --go-vtproto_out=. \
+  --plugin protoc-gen-go-vtproto=${GOPATH}/bin/protoc-gen-go-vtproto \
   --go-vtproto_opt=features=marshal+unmarshal+size \
-  client.proto
-
+  centrifugal_client.proto
+mv centrifugal_client.pb.go client.pb.go
+mv centrifugal_client_vtproto.pb.go client_vtproto.pb.go
 gomodifytype -file client.pb.go -all -w -from "[]byte" -to "Raw"
 
 echo "replacing tags of structs for JSON backwards compatibility..."
@@ -49,4 +50,4 @@ find . -name 'client.pb_easyjson.go' -print0 | xargs -0 sed -i "" "s/jwriter\.N/
 goimports -w client.pb_easyjson.go
 
 # Copy to definitions folder for docs link backwards compatibility.
-cp client.proto definitions/client.proto
+cp centrifugal_client.proto definitions/client.proto
